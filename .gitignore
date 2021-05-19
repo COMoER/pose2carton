@@ -185,3 +185,9 @@ model/*
 
 *.mp4
 *.pkl
+results/*
+*.png
+*.zip
+report.md
+*.txt
+sample/*

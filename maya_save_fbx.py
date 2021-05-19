@@ -61,7 +61,8 @@ def loadInfo(info_name, geo_name):
         for j in range(1,len(joint_skin[i]),2):
             transValue_item = (joint_skin[i][j], float(joint_skin[i][j+1]))
             transValue.append(transValue_item) 
-        #print vtx_name, transValue
+        print vtx_name, transValue
+
         cmds.skinPercent( 'skinCluster1', vtx_name, transformValue=transValue)
     cmds.skinPercent( 'skinCluster1', geo_name, pruneWeights=0.01, normalize=False )
     return root_name, joint_pos

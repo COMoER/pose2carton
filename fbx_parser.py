@@ -73,6 +73,7 @@ def record_info(root, jointDict, geo_name, file_info):
         file_info.write('joints {0} {1:.8f} {2:.8f} {3:.8f}\n'.format(key, val['pos'][0], val['pos'][1], val['pos'][2]))
     file_info.write('root {}\n'.format(root))
     vtxIndexList = cmds.getAttr(geo_name + ".vrts", multiIndices=True)
+    print("info len %d"%len(vtxIndexList))
     for i in vtxIndexList:
         w_array = cmds.skinPercent('skinCluster1', geo_name + ".vtx[" + str(i) + "]", query=True, value=True, normalize=True)
         jname_array = mel.eval('skinCluster -query -inf skinCluster1')
@@ -102,7 +103,13 @@ def record_obj(root, geoList, file_obj, obj_name):
 
     for geo in geoList:
         vtxIndexList = cmds.getAttr(geo + ".vrts", multiIndices=True)
+        print("%s obj len %d"%(geo,len(vtxIndexList)))
         for i in vtxIndexList:
+            pos = cmds.xform( geo + ".vtx[" + str(i) + "]", query=True, translation=True, worldSpace=True )
+            new_line = "v {:f} {:f} {:f}\n".format(pos[0], pos[1], pos[2])
+            file_obj.write(new_line)
+        faceIndexList = cmds.getAttr(geo + ".face", multiIndices=True)
+        for i in faceIndexList:
             cmds.select(geo + ".f["+ str(i) + "]", r=True)
             fv = cmds.polyInfo(fv=True)
             fv = fv[0].split()
