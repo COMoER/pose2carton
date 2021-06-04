@@ -191,3 +191,5 @@ results/*
 report.md
 *.txt
 sample/*
+*.mtl
+*.zip

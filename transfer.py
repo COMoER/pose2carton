@@ -13,7 +13,7 @@ import open3d as o3d
 import random 
 import pickle as pkl
 from tqdm import tqdm
-from util_cat import print_joint2,read_match,load_pkl,save_result
+from util_cat import print_joint2,read_match,load_pkl,save_result,add_mtl
 
 has_printed = False
 # ***** 需要你补充的变量) ******
@@ -250,7 +250,10 @@ def transfer_given_pose(human_pose, infoname, is_root_rotated=False,is_clean = T
         for i in range(2, len(splits), 2): 
             joint_name = splits[i]
             weight = float(splits[i+1])
-            weights[new_joint2index[joint_name]][vertex_index] = weight
+            try:
+                weights[new_joint2index[joint_name]][vertex_index] = weight
+            except:
+                pass
 
     # parse the T pose-skeleton
     # 关节三维点
@@ -360,16 +363,16 @@ def transfer_given_pose(human_pose, infoname, is_root_rotated=False,is_clean = T
     outmesh.vertices = o3d.utility.Vector3dVector(v)
 
     # finally save the results for submission. Note that the logic here only saves connectivity. You still need to run vis.py to record visualization 
-    if not osp.exists(osp.join("results", infoname.replace(".txt", ".pkl").replace('/', '_'))): 
-        os.makedirs("./results", exist_ok=True)
-        save_dict = {
-            "infoname": infoname, 
-            "hier": new_hier, 
-            "name2index": new_joint2index, 
-            "model2smpl": model_to_smpl
-        }
-        with open(osp.join("results", str(infoname).replace(".txt", ".pkl").replace('/', '_')), "wb") as f: 
-            pkl.dump(save_dict, f)
+    # if not osp.exists(osp.join("results", infoname.replace(".txt", ".pkl").replace('/', '_'))):
+    os.makedirs("./results", exist_ok=True)
+    save_dict = {
+        "infoname": infoname,
+        "hier": new_hier,
+        "name2index": new_joint2index,
+        "model2smpl": model_to_smpl
+    }
+    with open(osp.join("results", str(infoname).replace(".txt", ".pkl").replace('/', '_')), "wb") as f:
+        pkl.dump(save_dict, f)
 
     return outinfo, outmesh
 
@@ -496,7 +499,7 @@ if __name__ == '__main__':
 
     # load_pkl("results/9750/model_group_0_fbx_9750.pkl")
 
-    save_result(["1222","2832","2965","5992",'9750',"10567","11656","15633"])
+    # save_result(["1222","2832","2965","5992",'9750',"10567","11656","15633"])
 
     # perfect_matching()
     # for provided models
@@ -506,20 +509,21 @@ if __name__ == '__main__':
 
 
     # transfer_one_frame("fbx/10559.txt")
-    # transfer_one_sequence(r"model/group_0/fbx/9750.txt", "model/info_seq_5.pkl", use_online_model=False)
+    # transfer_one_sequence(r"model/11656/11656.txt", "model/info_seq_5.pkl", use_online_model=False)
 
     # for online models
 
     # to clean the riginfo(.txt)
-    # clean_info("model/Jackie/Ch29_nonPBR.txt")
-    # clean_obj("model/girl/girl_intermediate.obj")
+    clean_info("model/sofia/sofia.txt")
+    # clean_obj("model/rocksana/Rocksana_intermediate.obj")
 
     # print joint
-    # print_joint2("model/Jackie/Ch29_nonPBR_clean.txt")
+    print_joint2("model/sofia/sofia_clean.txt")
 
-    # transfer_one_sequence(r"model/Jackie/Ch29_nonPBR_clean.txt", "model/info_seq_5.pkl",use_online_model=True)
+    transfer_one_sequence(r"model/sofia/sofia_clean.txt", "model/info_seq_5.pkl",use_online_model=True)
 
-    
+    # add_mtl()
+
     # infofiles = [osp.join("fbx", _file) for _file in os.listdir("fbx") if 'out' not in _file and _file.endswith(".txt")]
     # for infofile in infofiles: 
     #     transfer_one_frame(infofile)

@@ -68,27 +68,29 @@ def getJointDict(root):
         this_level = next_level
     return joint_pos
 
-def record_info(root, jointDict, geo_name, file_info):
+def record_info(root, jointDict, geoList, file_info):
     for key, val in jointDict.items():
         file_info.write('joints {0} {1:.8f} {2:.8f} {3:.8f}\n'.format(key, val['pos'][0], val['pos'][1], val['pos'][2]))
     file_info.write('root {}\n'.format(root))
-    vtxIndexList = cmds.getAttr(geo_name + ".vrts", multiIndices=True)
-    print("info len %d"%len(vtxIndexList))
-    for i in vtxIndexList:
-        w_array = cmds.skinPercent('skinCluster1', geo_name + ".vtx[" + str(i) + "]", query=True, value=True, normalize=True)
-        jname_array = mel.eval('skinCluster -query -inf skinCluster1')
-        if w_array == None:
-            print("no skin!")
-            continue
-        if abs(1 - np.sum(w_array)) > 1e-5:
-            print('nnnnn')
-            exit(0)
-        cur_line = 'skin {0} '.format(i)
-        for cur_j in range(len(jname_array)):
-            if w_array[cur_j] > 0:
-                cur_line += '{0} {1:.4f} '.format(jname_array[cur_j], w_array[cur_j])
-        cur_line += '\n'
-        file_info.write(cur_line)
+    for geo_name in geoList:
+        vtxIndexList = cmds.getAttr(geo_name + ".vrts", multiIndices=True)
+        print("info %s len %d" % (geo_name, len(vtxIndexList)))
+        for i in vtxIndexList:
+            w_array = cmds.skinPercent('skinCluster1', geo_name + ".vtx[" + str(i) + "]", query=True, value=True,
+                                       normalize=True)
+            jname_array = mel.eval('skinCluster -query -inf skinCluster1')
+            if w_array == None:
+                print("no skin!")
+                continue
+            if abs(1 - np.sum(w_array)) > 1e-5:
+                print('nnnnn')
+                exit(0)
+            cur_line = 'skin {0} '.format(i)
+            for cur_j in range(len(jname_array)):
+                if w_array[cur_j] > 0:
+                    cur_line += '{0} {1:.4f} '.format(jname_array[cur_j], w_array[cur_j])
+            cur_line += '\n'
+            file_info.write(cur_line)
     for key, val in jointDict.items():
         if val['pa'] != 'None':
             file_info.write('hier {0} {1}\n'.format(val['pa'], key))
@@ -96,7 +98,9 @@ def record_info(root, jointDict, geo_name, file_info):
 def record_obj(root, geoList, file_obj, obj_name):
     start_v_number = 1
     # save texture map, obj, mtl to intermediate files
-    cmds.select(geoList[0]) # select a mesh.
+    cmds.select(geoList[0])
+    for geo in geoList[1:]:
+        cmds.select(geo,add=True) # select a mesh.
     output_filename = os.path.splitext(obj_name)[0] + '_intermediate.obj'
     cmds.file(output_filename, force=True, op="groups=0;ptgroups=0;materials=1;smoothing=0;normals=1", typ="OBJexport", pr=True, es=True) # save the selected mesh to OBJ file   vtxIndexList = cmds.getAttr(geo + ".vrts", multiIndices=True)
     cmds.select(clear=True)
@@ -190,7 +194,5 @@ if __name__ == '__main__':
     # obj_name = 'D:\\ModelResource_Dataset_SIGGRAPH20\\19713.obj'
     with open(obj_name, 'w') as file_obj:
         record_obj(root_name, geoList, file_obj, obj_name)
-    # info_name = 'D:\\ModelResource_Dataset_SIGGRAPH20\\19713.txt'
     with open(info_name, 'w') as file_info:
-        record_info(root_name, jointDict, geoList[0], file_info)
-    
+        record_info(root_name, jointDict, geoList, file_info)

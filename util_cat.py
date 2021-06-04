@@ -201,3 +201,13 @@ def save_result(good_match_list):
         shutil.copy(path_txt, os.path.join("submit_results", good_match, good_match + ".txt"))
         shutil.copy(path_vis, os.path.join("submit_results", good_match, "vis.mp4"))
         shutil.copy(path_pkl, os.path.join("submit_results", good_match,pkl_name))
+
+def add_mtl():
+    for file in os.listdir("model/obj_seq_5_3dmodel"):
+        if "obj" in file:
+            with open(os.path.join("model","obj_seq_5_3dmodel",file),'r') as f:
+                record = f.readlines()
+            with open(os.path.join("model","obj_seq_5_3dmodel",file),'w') as f:
+                f.write(record[0])
+                f.write("g skinCluster1Set tweakSet1\n")
+                f.writelines(record[1:])
