@@ -514,11 +514,11 @@ if __name__ == '__main__':
     # for online models
 
     # to clean the riginfo(.txt)
-    clean_info("model/sofia/sofia.txt")
+    # clean_info("model/sara/sara.txt")
     # clean_obj("model/rocksana/Rocksana_intermediate.obj")
 
     # print joint
-    print_joint2("model/sofia/sofia_clean.txt")
+    # print_joint2("model/sara/sara_clean.txt")
 
     transfer_one_sequence(r"model/sofia/sofia_clean.txt", "model/info_seq_5.pkl",use_online_model=True)
 

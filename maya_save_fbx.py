@@ -61,7 +61,7 @@ def loadInfo(info_name, geo_name):
         for j in range(1,len(joint_skin[i]),2):
             transValue_item = (joint_skin[i][j], float(joint_skin[i][j+1]))
             transValue.append(transValue_item) 
-        print vtx_name, transValue
+        # print vtx_name, transValue
 
         cmds.skinPercent( 'skinCluster1', vtx_name, transformValue=transValue)
     cmds.skinPercent( 'skinCluster1', geo_name, pruneWeights=0.01, normalize=False )
@@ -95,7 +95,7 @@ if __name__ == '__main__':
     # print(out_name)
     import sys 
     info_name = sys.argv[1]
-    obj_name = info_name.replace(".txt", ".obj")
+    obj_name = info_name.replace(".txt", "_intermediate.obj")
     out_name = info_name.replace(".txt", ".fbx")
     # info_name = "Ch14_nonPBR.txt"
     # obj_name = "Ch14_nonPBR.obj"

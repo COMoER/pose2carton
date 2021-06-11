@@ -192,4 +192,6 @@ report.md
 *.txt
 sample/*
 *.mtl
-*.zip
+!img/*
+!smpl.png
+1-郑煜/*
